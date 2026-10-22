@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_tarea.html" import tarea_card with context %}
+{% block title %}Mi bandeja · {{ app_name }}{% endblock %}
+{% block content %}
+<section class="card perfil">
+  <span class="avatar avatar-lg">{{ iniciales(user.nombre) }}</span>
+  <div class="perfil-info">
+    <div class="row-gap"><span class="badge-ok"><span class="dot"></span> ACTIVO</span><span class="mono muted xs">{{ user.codigo }}</span></div>
+    <h1 class="nombre">{{ user.nombre }}</h1>
+    <p class="muted">{{ ROLES[user.rol] }}</p>
+  </div>
+  <div class="reloj mono"><span class="muted xs">HORA ACTUAL</span><span id="reloj" class="reloj-v">--:--</span></div>
+</section>
+
+<section class="stats">
+  <button class="stat" data-ir-tab="recibir"><span class="mono muted xs">POR RECIBIR</span><b class="stat-n c-amber">{{ grupos.recibir|length }}</b></button>
+  <button class="stat" data-ir-tab="curso"><span class="mono muted xs">EN CURSO</span><b class="stat-n c-blue">{{ grupos.curso|length }}</b></button>
+  <button class="stat" data-ir-tab="concluidas"><span class="mono muted xs">CONCLUIDAS</span><b class="stat-n c-green">{{ grupos.concluidas|length }}</b></button>
+</section>
+
+<section>
+  <div class="tabs" role="tablist">
+    <button class="tab is-active" role="tab" data-tab="recibir">POR RECIBIR <span class="pill">{{ grupos.recibir|length }}</span></button>
+    <button class="tab" role="tab" data-tab="curso">EN CURSO <span class="pill">{{ grupos.curso|length }}</span></button>
+    <button class="tab" role="tab" data-tab="concluidas">CONCLUIDAS <span class="pill">{{ grupos.concluidas|length }}</span></button>
+  </div>
+  {% for clave, titulo, vacio in [('recibir','Por recibir','No tienes tareas nuevas por recibir.'),('curso','En curso','No tienes tareas en curso.'),('concluidas','Concluidas','Aún no has concluido tareas.')] %}
+  <div class="panel{{ ' is-active' if loop.first }}" data-panel="{{ clave }}">
+    <div class="grid-tareas">
+    {% for t in grupos[clave] %}{{ tarea_card(t, True, True) }}{% else %}
+      <div class="vacio card">{{ icon('clipboard', 28) }}<p>{{ vacio }}</p></div>
+    {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</section>
+
+<section>
+  <div class="seccion-t"><h2 class="h2 mono">MIS FOLIOS</h2></div>
+  <div class="grid-folios">
+  {% for f in folios %}
+    {% set pct = (f.hechas * 100 // f.total) if f.total else 0 %}
+    <a class="card folio-card" href="{{ url_for('main.folio', fid=f.id) }}">
+      <div class="row-gap"><span class="chip chip-amber">{{ f.folio }}</span><span class="estado est-{{ 'en_proceso' if f.estado == 'en_proceso' else 'pendiente' }}"><span class="dot"></span> {{ ESTADOS_FOLIO[f.estado] }}</span></div>
+      <h3 class="folio-t">{{ f.nombre_proyecto }}</h3>
+      <p class="muted">{{ f.cliente }} · {{ f.sitio }}</p>
+      <div class="mono muted xs">{{ icon('clock', 14) }} {{ fmt_fecha(f.fecha_inicio) }} — {{ fmt_fecha(f.fecha_fin) }}</div>
+      <div class="progreso"><div class="mono xs row-between"><span class="muted">{{ f.hechas }}/{{ f.total }} tareas</span><span class="c-amber">{{ pct }}%</span></div><div class="barra"><i style="width: {{ pct }}%"></i></div></div>
+    </a>
+  {% else %}
+    <div class="vacio card">{{ icon('folder', 28) }}<p>Todavía no tienes folios asignados.</p></div>
+  {% endfor %}
+  </div>
+</section>
+{% endblock %}

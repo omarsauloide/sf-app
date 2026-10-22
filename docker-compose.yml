@@ -1,0 +1,29 @@
+# Proyecto "sf-app" para el Administrador de Docker de Hostinger.
+# Las variables (${...}) se llenan en la sección de variables de entorno del proyecto.
+services:
+  sf-app:
+    build: .
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://folios_app:${APP_DB_PASSWORD}@postgres-folios:5432/folios
+      SECRET_KEY: ${SECRET_KEY}
+      COOKIE_SECURE: "1"
+      APP_NAME: SF-EMPRESARIAL
+      APPSMITH_URL: https://appsmith-ogqn.srv2013178.hstgr.cloud
+      SOPORTE_NOMBRE: ${SOPORTE_NOMBRE:-}
+      SOPORTE_TEL: ${SOPORTE_TEL:-}
+    networks:
+      - appsmith-ogqn_default
+    labels:
+      # IMPORTANTE: copia estos nombres (entrypoints / certresolver) de las etiquetas
+      # que ya usa el proyecto appsmith-ogqn, si son distintos.
+      - traefik.enable=true
+      - traefik.http.routers.sfapp.rule=Host(`${APP_HOST}`)
+      - traefik.http.routers.sfapp.entrypoints=websecure
+      - traefik.http.routers.sfapp.tls=true
+      - traefik.http.routers.sfapp.tls.certresolver=letsencrypt
+      - traefik.http.services.sfapp.loadbalancer.server.port=8000
+
+networks:
+  appsmith-ogqn_default:
+    external: true

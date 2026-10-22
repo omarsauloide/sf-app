@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_tarea.html" import tarea_card with context %}
+{% block title %}{{ f.folio }} · {{ app_name }}{% endblock %}
+{% block content %}
+{% set pct = (hechas * 100 // total) if total else 0 %}
+<div class="folio-head">
+  <a class="icon-btn" href="{{ url_for('main.inicio') }}" aria-label="Volver">{{ icon('back', 22) }}</a>
+  <div class="folio-head-t">
+    <div class="row-gap"><span class="chip chip-amber">{{ f.folio }}</span><span class="estado est-{{ 'en_proceso' if f.estado == 'en_proceso' else 'pendiente' }}"><span class="dot"></span> {{ ESTADOS_FOLIO[f.estado] }}</span></div>
+    <h1 class="h1">{{ f.nombre_proyecto }}</h1>
+  </div>
+</div>
+<div class="progreso card-flat"><div class="mono xs row-between"><span class="muted">{{ hechas }}/{{ total }} tareas completadas</span><span class="c-amber">{{ pct }}%</span></div><div class="barra"><i style="width: {{ pct }}%"></i></div></div>
+
+<section class="card info">
+  <p>{{ icon('user', 18) }} <span class="muted">Cliente:</span> {{ f.cliente }}{% if f.contacto %} · {{ f.contacto }}{% endif %}</p>
+  <p>{{ icon('pin', 18) }} <span><b>{{ f.sitio or '—' }}</b>{% if f.calle_numero %} — {{ f.calle_numero }}, {{ f.colonia }}, {{ f.municipio }}, {{ f.estado_mx }}, C.P. {{ f.codigo_postal }}{% endif %}
+    {% if f.referencias %}<br><span class="muted">Ref.: {{ f.referencias }}</span>{% endif %}</span></p>
+  <p class="mono">{{ icon('clock', 18) }} <span>{{ fmt_fecha(f.fecha_inicio) }} — {{ fmt_fecha(f.fecha_fin) }}</span></p>
+  {% if f.supervisor %}<p>{{ icon('user', 18) }} <span><span class="muted">Supervisor:</span> {{ f.supervisor }}</span></p>{% endif %}
+  {% if f.descripcion %}<p class="muted desc">{{ f.descripcion }}</p>{% endif %}
+</section>
+
+<div class="tabs" role="tablist">
+  <button class="tab is-active" role="tab" data-tab="tareas">TAREAS ({{ tareas|length }})</button>
+  <button class="tab" role="tab" data-tab="evidencias">EVIDENCIAS (0)</button>
+  <button class="tab" role="tab" data-tab="notas">NOTAS</button>
+</div>
+<div class="panel is-active" data-panel="tareas">
+  <div class="grid-tareas">
+  {% for t in tareas %}{{ tarea_card(t, es_sup, False) }}{% else %}
+    <div class="vacio card">{{ icon('clipboard', 28) }}<p>Este folio aún no tiene tareas.</p></div>
+  {% endfor %}
+  </div>
+</div>
+<div class="panel" data-panel="evidencias"><div class="vacio card">{{ icon('folder', 28) }}<p>Aquí aparecerán las fotos y evidencias de cada tarea.</p><span class="mono xs muted">PRÓXIMAMENTE</span></div></div>
+<div class="panel" data-panel="notas"><div class="vacio card">{{ icon('clipboard', 28) }}<p>Aquí aparecerán las notas de la bitácora.</p><span class="mono xs muted">PRÓXIMAMENTE</span></div></div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% from "_icons.html" import icon %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0A0A0D">
+  <meta name="csrf" content="{{ csrf }}">
+  <title>{% block title %}{{ app_name }}{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body class="{% block bodyclass %}{% endblock %}">
+{% block shell %}
+<header class="topbar">
+  {% if user %}<button class="icon-btn" id="abrir-menu" aria-label="Abrir menú">{{ icon('menu', 22) }}</button>{% endif %}
+  <a class="brand" href="{{ url_for('main.inicio') }}"><span class="logo">{{ icon('bolt', 20) }}</span><span class="brand-name">{{ app_name }}</span></a>
+  <span class="fecha mono" id="fecha-hoy"></span>
+</header>
+{% if user %}
+<div class="drawer-bg" id="drawer-bg" hidden></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-head">
+    <span class="logo">{{ icon('bolt', 20) }}</span>
+    <div><div class="brand-name">{{ app_name }}</div><div class="mono muted xs">FIELD OPERATIONS</div></div>
+    <button class="icon-btn" id="cerrar-menu" aria-label="Cerrar menú">{{ icon('x', 20) }}</button>
+  </div>
+  <div class="card perfil-mini">
+    <span class="avatar">{{ iniciales(user.nombre) }}</span>
+    <div><div class="nombre-c">{{ user.nombre }}</div><div class="mono muted xs"><span class="dot"></span> {{ user.codigo }} · {{ ROLES[user.rol] }}</div></div>
+  </div>
+  <nav class="drawer-nav">
+    <a href="{{ url_for('main.inicio') }}">{{ icon('clipboard', 20) }}<span><b>Mi bandeja</b><small>Tareas y folios</small></span></a>
+  </nav>
+  <form method="post" action="{{ url_for('main.logout') }}" class="drawer-foot">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <button class="salir" type="submit">{{ icon('logout', 20) }}<span><b>Cerrar sesión</b></span></button>
+  </form>
+</aside>
+{% endif %}
+<main class="wrap">{% block content %}{% endblock %}</main>
+{% endblock %}
+<div class="toast" id="toast" role="status" hidden></div>
+<script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+</body>
+</html>

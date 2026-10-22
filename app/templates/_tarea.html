@@ -1,0 +1,24 @@
+{% from "_icons.html" import icon, estado_icon with context %}
+{% macro tarea_card(t, es_sup, con_folio=False) %}
+<article class="card tarea est-{{ t.estado }}">
+  <div class="tarea-top">
+    <span class="estado est-{{ t.estado }}">{{ estado_icon(t.estado) }} {{ ESTADOS_TAREA[t.estado] }}</span>
+    {% if t.tipo %}<span class="chip chip-blue">{{ t.tipo }}</span>{% endif %}
+    {% if t.orden and not con_folio %}<span class="num">#{{ t.orden }}</span>{% endif %}
+  </div>
+  <h3 class="tarea-titulo">{{ t.titulo }}</h3>
+  {% if con_folio %}
+  <a class="tarea-folio" href="{{ url_for('main.folio', fid=t.folio_id) }}"><span class="chip chip-amber">{{ t.folio }}</span> {{ t.nombre_proyecto }} · {{ t.cliente }}</a>
+  {% endif %}
+  {% if t.descripcion %}<p class="muted tarea-desc">{{ t.descripcion }}</p>{% endif %}
+  <div class="tarea-meta mono">
+    {% if t.fecha_limite %}<span>{{ icon('clock', 14) }} Límite {{ fmt_fecha(t.fecha_limite) }}</span>{% endif %}
+    {% if t.concluida_en and t.estado in ('concluida','validada') %}<span class="ok">✓ Concluida {{ t.concluida_en }}</span>{% endif %}
+  </div>
+  {% if es_sup and t.estado in SIGUIENTE %}
+  <button class="btn {{ 'btn-primary' if t.estado in ('pendiente','en_proceso') else 'btn-ghost' }}" data-accion="estado" data-tarea="{{ t.id }}" data-nuevo="{{ SIGUIENTE[t.estado][0] }}">
+    {{ SIGUIENTE[t.estado][1] }}
+  </button>
+  {% endif %}
+</article>
+{% endmacro %}

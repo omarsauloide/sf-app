@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Iniciar sesión · {{ app_name }}{% endblock %}
+{% block bodyclass %}login-page{% endblock %}
+{% block content %}
+<section class="login">
+  <p class="eyebrow mono">CONTROL DE FOLIOS</p>
+  <h1 class="display">Inicio<br>de sesión</h1>
+  <p class="muted lead">Ingresa tu código de empleado y tu contraseña para ver tus folios y tareas.</p>
+  <form method="post" class="form" autocomplete="on">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <label class="mono label" for="codigo">CÓDIGO DE EMPLEADO</label>
+    <div class="field">{{ icon('user', 18) }}<input id="codigo" name="codigo" type="text" placeholder="Sup001" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required autofocus></div>
+    <label class="mono label" for="password">CONTRASEÑA</label>
+    <div class="field">{{ icon('lock', 18) }}<input id="password" name="password" type="password" placeholder="••••••••" autocomplete="current-password" required></div>
+    {% if error %}<div class="alert-error" role="alert">{{ error }}</div>{% endif %}
+    <button class="btn btn-primary btn-lg" type="submit">ENTRAR</button>
+  </form>
+  <div class="soporte card">
+    <span class="mono xs soporte-t">¿PROBLEMAS PARA INGRESAR?</span>
+    <p>Contacta a soporte técnico{% if soporte_nombre %}: <b>{{ soporte_nombre }}</b>{% endif %}</p>{% if soporte_tel %}<p class="mono ok">{{ soporte_tel }}</p>{% endif %}
+  </div>
+</section>
+{% endblock %}

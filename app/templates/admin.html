@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Panel · {{ app_name }}{% endblock %}
+{% block content %}
+<section class="card perfil">
+  <span class="avatar avatar-lg">{{ iniciales(user.nombre) }}</span>
+  <div class="perfil-info"><h1 class="nombre">{{ user.nombre }}</h1><p class="muted">{{ ROLES[user.rol] }}</p></div>
+</section>
+<section class="card vacio">
+  {{ icon('folder', 32) }}
+  <p>El panel de administración (clientes, sitios, folios, tareas y revisiones) está en la plataforma de gestión.</p>
+  {% if appsmith_url %}<a class="btn btn-primary" href="{{ appsmith_url }}">Abrir panel de administración</a>{% endif %}
+</section>
+{% endblock %}
